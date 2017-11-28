@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script
+  src="http://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+	
+	<script>
+		$(document).ready(function(){
+
+			$.ajax({
+					url: 'display_cars.php',
+					type: 'post',
+					success: function(show_cars)
+					{
+						if(!show_cars.error)
+						{
+							$("#show-cars").html(show_cars);
+						}
+					}
+				});
+
+
+			$("#search").keyup(function(e)
+			{
+
+				var search = $("#search").val();
+				
+				$.ajax({
+					url: 'search.php',
+					data: {search: search},
+					type: "post",
+					success: function(data){
+						if(!data.error){
+							$('#result').html(data);
+						}
+					}
+				});
+
+			});
+
+			// this code add cars to database
+			$("#add-car-form").submit(function(event) {
+				event.preventDefault();
+
+				var postData = $(this).serialize();
+
+				var url = $(this).attr("action");
+
+
+				$.ajax({
+					url: url,
+					data: postData,
+					type: "post",
+					success: function(php_table_data){
+						if(!php_table_data.error){
+							$("#car-result").html(php_table_data);
+							$("#add-car-form")[0].reset();
+						}
+					}
+				});
+				$.ajax({
+					url: 'display_cars.php',
+					type: 'post',
+					success: function(show_cars)
+					{
+						if(!show_cars.error)
+						{
+							$("#show-cars").html(show_cars);
+						}
+					}
+				});
+
+			}); // add cart code function ends
+
+			function displayCars(){
+				
+			}
+		});
+	</script>
+
+	<div class="container text-center col-xs-10 col-xs-offset-1">
+		<div class="row">
+			<h2>Search Database</h2>
+
+			<input type="text" class="form-control" name="search" id="search" placeholder="Search our inventory">
+			<br><br>
+
+			<h2 class="bg-success" id="result"></h2>
+		</div>
+
+
+<!--                         add carrrrrr             -->
+
+
+		<div class="row">
+			<form  method="post" id="add-car-form" action="add_cars.php" class="col-xs-12" >
+				<div class="form-group">
+					<label for="car_name">Add car</label>
+					<input id="car_name" type="text" name="car_name" class="form-control" required>
+				</div>
+
+				<div class="form-group">
+					<input type="submit" class="btn btn-primary" value="Add car">
+				</div>
+			</form>
+
+			<div class="col-xs-6">
+
+				<table class="table table-bordered table-hover table-striped">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>NAME</th>
+						</tr>
+					</thead>
+					<tbody id="show-cars">
+						
+					</tbody>
+				</table>
+
+			</div>
+
+			<div class="col-xs-6">
+				<p id='feedback' class='bg-success'></p>
+				<div id="action-container">
+					
+				</div>
+	
+			</div> <!-- action-container -->
+
+		</div>
+</div>
+</body>
+</html>
